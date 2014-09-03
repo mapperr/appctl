@@ -18,13 +18,13 @@ DIR_UPBASE=`dirname "$DIR_BASE"`
 BIN_BUILDCTL="$DIR_UPBASE/buildctl/buildctl"
 BIN_TOMCATCTL="$DIR_UPBASE/tomcatctl/tomcatctl"
 
-if [ -x "$BIN_BUILDCTL" ]
+if ! [ -x "$BIN_BUILDCTL" ]
 then
 	echo "impossibile eseguire [$BIN_BUILDCTL]"
 	exit 1
 fi
 
-if [ -x "$BIN_TOMCATCTL" ]
+if ! [ -x "$BIN_TOMCATCTL" ]
 then
 	echo "impossibile eseguire [$BIN_TOMCATCTL]"
 	exit 1
