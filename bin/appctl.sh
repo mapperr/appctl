@@ -80,7 +80,7 @@ appctl_undeploy()
 		return 2
 	fi
 	
-	$BIN_TOMCATCTL deploy "$istanza_tomcat" "$pathwar" "$context" "r$revision"
+	$BIN_TOMCATCTL undeploy "$istanza_tomcat" "$pathwar" "$context" "r$revision"
 	if [ $? -ne 0 ]
 	then
 		echo "deploy fallito"
@@ -116,6 +116,8 @@ appctl_deploy()
 		echo "build fallito"
 		return 1
 	fi
+	
+	revision=`$BIN_BUILDCTL rev "$applicazione"`
 	
 	$BIN_TOMCATCTL deploy "$istanza_tomcat" "$pathwar" "$context" "r$revision"
 	if [ $? -ne 0 ]
