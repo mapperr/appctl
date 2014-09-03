@@ -44,7 +44,7 @@ helpmsg()
 	echo ""
 	echo "		effettua il deploy dell'applicazione alla revision specificata"
 	echo ""
-	echo "list"
+	echo "ls"
 	echo ""
 	echo "		lista delle applicazioni disponibili contenute nel file [$FILE_APPS]"
 	echo ""
@@ -107,14 +107,15 @@ appctl_deploy()
 	context=`cat $FILE_APPS | grep ^$applicazione | awk '{print $2}'`
 	istanza_tomcat=`cat $FILE_APPS | grep ^$applicazione | awk '{print $3}'`
 	
-	$BIN_BUILDCTL dist "$applicazione"
+	timestamp=`date +'%Y%m%d%H%M%S'`
+	pathwar="$TMP/$timestamp.war"
+	
+	$BIN_BUILDCTL dist "$applicazione" "$revision" "$pathwar"
 	if [ $? -ne 0 ]
 	then
 		echo "build fallito"
 		return 1
 	fi
-	
-	pathwar=`$BIN_BUILDCTL last`
 	
 	$BIN_TOMCATCTL deploy "$istanza_tomcat" "$pathwar" "$context" "r$revision"
 	if [ $? -ne 0 ]
@@ -122,8 +123,20 @@ appctl_deploy()
 		echo "deploy fallito"
 		return 1
 	fi
+	
+	rm -f "$pathwar"
 }
 
+appctl_list()
+{
+	if [ -r "$FILE_APPS" ]
+	then
+		cat "$FILE_APPS" | grep -v "^#"
+	else
+		echolog "application file [$FILE_APPS] does not exists"
+		return 1
+	fi
+}
 
 # ---------------------------------------------------------
 # esecuzione
@@ -133,6 +146,13 @@ if [ "$1" = "deploy" ]
 then
 	shift
 	appctl_deploy $@
+	exit 0
+fi
+
+if [ "$1" = "ls" ]
+then
+	shift
+	appctl_list $@
 	exit 0
 fi
 
